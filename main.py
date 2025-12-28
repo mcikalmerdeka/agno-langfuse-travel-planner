@@ -1,0 +1,113 @@
+"""Main entry point for the Travel Planning Workflow."""
+import asyncio
+from langfuse import observe, propagate_attributes
+from agno.utils.pprint import pprint_run_response
+
+# Import configuration (initializes Langfuse and OpenLIT)
+from core.config import langfuse
+from core.utils import make_agent_observable
+
+# Import agents
+from agents.research_agents import destination_researcher, hotel_finder, activities_researcher
+from agents.planner_agent import itinerary_planner
+from agents.critique_agent import critique_agent
+
+# Import workflow
+from workflows.travel_workflow import travel_planning_workflow
+
+
+# Apply Langfuse observation to all agents
+make_agent_observable(destination_researcher, "destination-researcher")
+make_agent_observable(hotel_finder, "hotel-finder")
+make_agent_observable(activities_researcher, "activities-researcher")
+make_agent_observable(itinerary_planner, "itinerary-planner")
+make_agent_observable(critique_agent, "critique-agent")
+
+
+@observe(as_type="span", name="Travel Planning Pipeline")
+async def plan_trip(query: str):
+    """
+    Run the travel planning workflow with Langfuse tracing.
+    
+    Workflow Structure:
+    ==================
+    Travel Planning Pipeline (span)
+    └── travel-planning-workflow (agent)
+        ├── Research Team Phase ⚡ (runs ONCE only)
+        │   ├── destination-researcher (agent) → tavily-web-search
+        │   ├── hotel-finder (agent) → tavily-web-search
+        │   └── activities-researcher (agent) → tavily-web-search
+        │
+        ├── Team Lead <-> Manager Revision Loop (max 2 iterations)
+        │   ├── Iteration 1:
+        │   │   ├── itinerary-planner (team lead) → creates initial report
+        │   │   └── critique-agent (manager) → reviews and approves/requests revision
+        │   └── Iteration 2 (if Manager requested revision):
+        │       ├── itinerary-planner (team lead) → revises report based on Manager feedback
+        │       └── critique-agent (manager) → final approval
+        │
+        └── Present Final Report 📋
+            └── itinerary-planner (team lead) → presents Manager-approved plan to user
+    
+    Benefits:
+    - Research agents (Tavily tool calls) run ONLY ONCE at the start
+    - Only itinerary planner revises in loop, no redundant research calls
+    - Maximum 2 loop iterations = 1 revision opportunity
+    - Mimics real org structure: Research Team → Team Lead → Manager approval
+    - Final output is from itinerary planner (natural language), not critique (structured)
+    """
+    with propagate_attributes(
+        # Change these attributes to your own
+        trace_name="travel-planning-trace",
+        user_id="cikalmerdeka",
+        session_id="travel-planning-pipeline-001",
+        tags=["travel", "planning", "workflow", "manager-approval"],
+        version="1.0.0",
+        metadata={
+            "experiment": "travel_planning_pipeline",
+            "environment": "development",
+            "execution_mode": "parallel_once_then_revision_loop"
+        }
+    ):
+        result = await travel_planning_workflow.arun(query)
+        
+        # Update trace with final input/output
+        langfuse.update_current_trace(
+            input=query,
+            output=result.content if result else None,
+        )
+        
+        return result
+
+
+if __name__ == "__main__":
+    
+    # Define the query
+    query = "Plan a 5-day trip to Kyoto, Japan for a solo traveler interested in temples, traditional culture, and local food. Budget is mid-range."
+    
+    print("=" * 70)
+    print("🌏 TRAVEL PLANNING WORKFLOW")
+    print("=" * 70)
+    print(f"\n📝 Query: {query}\n")
+    print("=" * 70)
+    print("\n🔄 Workflow Flow:")
+    print("   1. Research Team (3 agents) → Parallel research (ONE TIME ONLY)")
+    print("   2. Team Lead (itinerary planner) → Creates report")
+    print("   3. Manager (critique agent) → Reviews report")
+    print("   4. [IF NEEDED] Team Lead → Revises based on Manager feedback")
+    print("   5. Manager → Final approval")
+    print("   6. Team Lead → Presents final approved plan to user 📋")
+    print("=" * 70)
+    
+    # Run the travel planning workflow
+    result = asyncio.run(plan_trip(query))
+    
+    # Print the result
+    print("\n" + "=" * 70)
+    print("📋 FINAL TRAVEL PLAN")
+    print("=" * 70)
+    pprint_run_response(result, markdown=True)
+    
+    # Ensure traces are sent before script exits
+    langfuse.flush()
+
