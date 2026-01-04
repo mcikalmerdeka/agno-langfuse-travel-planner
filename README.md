@@ -1,5 +1,7 @@
 # Multi-Agent Travel Planner with Agno Workflows and Langfuse Observability
 
+![Project Header](assets/Project%20Header.png)
+
 A production-ready travel planning system built with Agno's workflow orchestration and comprehensive Langfuse observability. Features parallel agent execution, manager approval loops, and full trace monitoring.
 
 ## Features
