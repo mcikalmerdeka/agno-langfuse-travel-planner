@@ -71,16 +71,13 @@ graph TD
     HF --> Sync
     AR --> Sync
 
-    Sync --> TL1[Team Lead<br/>Itinerary Planner<br/>Creates Plan]
+    Sync --> TL[Team Lead<br/>Itinerary Planner<br/>Creates/Revises Plan]
 
-    TL1 --> MR1[Manager<br/>Critique Agent<br/>Reviews Plan]
+    TL --> MR[Manager<br/>Critique Agent<br/>Reviews Plan]
 
-    MR1 --> Decision{Approved?}
+    MR --> Decision{Approved?}
 
-    Decision -->|No<br/>Max 1 Revision| TL2[Team Lead<br/>Revises Plan]
-    TL2 --> MR2[Manager<br/>Final Review]
-    MR2 --> Final
-
+    Decision -->|No<br/>Max 1 Revision| TL
     Decision -->|Yes| Final[Final Report<br/>Present to User]
 
     Final --> End([Approved Travel Plan])
@@ -89,10 +86,8 @@ graph TD
     style DR fill:#fff4e1
     style HF fill:#fff4e1
     style AR fill:#fff4e1
-    style TL1 fill:#e8f5e9
-    style TL2 fill:#e8f5e9
-    style MR1 fill:#fce4ec
-    style MR2 fill:#fce4ec
+    style TL fill:#e8f5e9
+    style MR fill:#fce4ec
     style Final fill:#f3e5f5
 ```
 
