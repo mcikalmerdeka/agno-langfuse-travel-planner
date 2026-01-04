@@ -63,17 +63,13 @@ agno-langfuse-travel-planner/
 graph TD
     Start([Travel Query]) --> Research[Research Team Phase<br/>Parallel Execution]
 
-    Research --> DR[Destination Researcher]
-    Research --> HF[Hotel Finder]
-    Research --> AR[Activities Researcher]
+    Research --> DR[Destination Researcher<br/><i>Uses: Tavily Search</i>]
+    Research --> HF[Hotel Finder<br/><i>Uses: Tavily Search</i>]
+    Research --> AR[Activities Researcher<br/><i>Uses: Tavily Search</i>]
 
-    DR --> TS1[Tavily Search]
-    HF --> TS2[Tavily Search]
-    AR --> TS3[Tavily Search]
-
-    TS1 --> Sync[Sync Results]
-    TS2 --> Sync
-    TS3 --> Sync
+    DR --> Sync[Sync Results]
+    HF --> Sync
+    AR --> Sync
 
     Sync --> TL1[Team Lead<br/>Itinerary Planner<br/>Creates Plan]
 
