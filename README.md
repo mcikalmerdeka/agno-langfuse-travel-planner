@@ -154,6 +154,11 @@ All agent interactions, tool calls, and workflow steps are traced in Langfuse:
 - Complete input/output logging
 - Performance metrics and cost tracking
 
+I have ran the script myself and you may check the example trace in the Langfuse for the Workflow approach and Async Team approach below:
+
+- Workflow approach: [Link](https://cloud.langfuse.com/project/cmjh2ili300m9ad07yz62xdp9/traces/0a10c0aa12ff977829621d704b0f03a7?timestamp=2025-12-27T16:51:17.130Z)
+- Async Team approach: [Link](https://cloud.langfuse.com/project/cmjh2ili300m9ad07yz62xdp9/traces/ee4292bdd73c25e8ce2931808c6c64df?timestamp=2026-01-04T19:09:14.581Z)
+
 ## Tech Stack
 
 - **Agno**: Agent framework with workflow orchestration
