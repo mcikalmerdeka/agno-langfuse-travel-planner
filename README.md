@@ -6,6 +6,7 @@ A production-ready travel planning system built with Agno's workflow orchestrati
 
 ## Features
 
+- **🎨 Modern Web Interface**: Beautiful Gradio UI for easy interaction
 - **Parallel Research**: 3 specialized agents (destination, hotel, activities) run simultaneously for efficiency
 - **Manager Approval Loop**: Team lead creates plans, manager reviews with max 1 revision cycle
 - **Full Observability**: Complete Langfuse tracing with OpenLIT instrumentation
@@ -17,6 +18,9 @@ A production-ready travel planning system built with Agno's workflow orchestrati
 ```
 agno-langfuse-travel-planner/
 ├── main.py                    # Entry point - run this
+├── frontend/                  # Gradio web interface
+│   ├── __init__.py           # Module exports
+│   └── app.py                # Gradio interface with dark theme
 ├── core/                      # Configuration & utilities
 │   ├── config.py             # Langfuse & OpenLIT initialization
 │   ├── schemas.py            # Pydantic models
@@ -133,8 +137,10 @@ You can get the keys from the following links:
 3. **Run the application**:
 
 ```bash
-uv run main.py
+python main.py
 ```
+
+This launches a modern Gradio web interface at `http://localhost:7860`
 
 ## How It Works
 
@@ -161,9 +167,28 @@ I have ran the script myself and you may check the example trace in the Langfuse
 
 ## Tech Stack
 
+- **Gradio**: Modern web interface framework
 - **Agno**: Agent framework with workflow orchestration
 - **Langfuse**: Observability and tracing
 - **OpenLIT**: LLM instrumentation
 - **OpenAI**: GPT-4.1-nano (You can change the model to your own liking, make sure to consider the latency, cost, and accuracy)
 - **Tavily**: Web search API
 - **Pydantic**: Data validation and structured outputs
+
+## 🎨 Web Interface
+
+The application includes a Gradio web interface with:
+
+- **Dark Theme UI**: Clean dark background with white text for better readability
+- **Example Queries**: 5 pre-built travel planning examples
+- **Copy to Clipboard**: One-click copy of generated travel plans
+- **Formatted Output**: Markdown rendering with proper structure
+- **Status Updates**: Real-time workflow status messages
+- **Responsive Design**: Works on desktop and mobile devices
+
+### Interface Features:
+- Input form with multi-line text support
+- Clickable example queries for quick testing
+- Status indicator showing workflow progress
+- Copy button to export travel plans as markdown
+- Collapsible workflow information section

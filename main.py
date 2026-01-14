@@ -1,7 +1,5 @@
 """Main entry point for the Travel Planning Workflow."""
-import asyncio
 from langfuse import observe, propagate_attributes
-from agno.utils.pprint import pprint_run_response
 
 # Import configuration (initializes Langfuse and OpenLIT)
 from core.config import langfuse
@@ -14,6 +12,9 @@ from agents.critique_agent import critique_agent
 
 # Import workflow
 from workflows.travel_workflow import travel_planning_workflow
+
+# Import Gradio interface
+from frontend import create_gradio_interface
 
 
 # Apply Langfuse observation to all agents
@@ -81,33 +82,20 @@ async def plan_trip(query: str):
 
 
 if __name__ == "__main__":
-    
-    # Define the query
-    query = "Plan a 5-day trip to Kyoto, Japan for a solo traveler interested in temples, traditional culture, and local food. Budget is mid-range."
-    
     print("=" * 70)
-    print("🌏 TRAVEL PLANNING WORKFLOW")
+    print("🌏 TRAVEL PLANNING WORKFLOW - WEB INTERFACE")
     print("=" * 70)
-    print(f"\n📝 Query: {query}\n")
-    print("=" * 70)
-    print("\n🔄 Workflow Flow:")
-    print("   1. Research Team (3 agents) → Parallel research (ONE TIME ONLY)")
-    print("   2. Team Lead (itinerary planner) → Creates report")
-    print("   3. Manager (critique agent) → Reviews report")
-    print("   4. [IF NEEDED] Team Lead → Revises based on Manager feedback")
-    print("   5. Manager → Final approval")
-    print("   6. Team Lead → Presents final approved plan to user 📋")
+    print("\n🚀 Starting Gradio interface...")
+    print("📊 Langfuse tracing is enabled for all workflows")
     print("=" * 70)
     
-    # Run the travel planning workflow
-    result = asyncio.run(plan_trip(query))
-    
-    # Print the result
-    print("\n" + "=" * 70)
-    print("📋 FINAL TRAVEL PLAN")
-    print("=" * 70)
-    pprint_run_response(result, markdown=True)
-    
-    # Ensure traces are sent before script exits
-    langfuse.flush()
+    # Create and launch the Gradio interface
+    interface = create_gradio_interface(plan_trip)
+    interface.launch(
+        server_name="0.0.0.0",
+        server_port=7860,
+        share=False,
+        show_error=True,
+        quiet=False
+    )
 
