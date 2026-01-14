@@ -309,6 +309,8 @@ Review the README.md for setup instructions.
             
             **Observability:** All steps are traced with Langfuse for full transparency.
             """)
+            
+            gr.Image("assets/Illustration.png", label="Workflow Diagram", show_label=False)
         
         # Main interface
         with gr.Row():
