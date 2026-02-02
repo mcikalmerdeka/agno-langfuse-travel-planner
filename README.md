@@ -23,6 +23,8 @@ tags:
 
 A production-ready travel planning system built with Agno's workflow orchestration and comprehensive Langfuse observability. Features parallel agent execution, manager approval loops, and full trace monitoring.
 
+**🚀 Try it live:** [HuggingFace Space Demo](https://huggingface.co/spaces/mcikalmerdeka/multi-agent-travel-planner)
+
 ## Features
 
 - **🎨 Modern Web Interface**: Beautiful Gradio UI for easy interaction
