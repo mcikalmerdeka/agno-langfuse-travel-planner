@@ -13,4 +13,5 @@ dependencies = [
     "openlit>=1.26.0",
     "python-dotenv>=1.2.1",
     "tavily-python>=0.7.17",
+    "xet>=1.3.1",
 ]
