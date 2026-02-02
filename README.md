@@ -1,3 +1,21 @@
+---
+title: Multi Agent Travel Planner
+emoji: ✈️
+colorFrom: blue
+colorTo: red
+sdk: gradio
+sdk_version: 6.5.1
+app_file: main.py
+pinned: false
+license: mit
+short_description: A production-ready travel planning system built with Agno's workflow orchestration and comprehensive Langfuse observability. Features parallel agent execution, manager approval loops, and full trace monitoring.
+tags:
+  - agno
+  - langfuse
+  - travel-planning
+  - multi-agent
+---
+
 # Multi-Agent Travel Planner with Agno Workflows and Langfuse Observability
 
 ![Project Header](assets/Project%20Header.png)
@@ -187,6 +205,7 @@ The application includes a Gradio web interface with:
 - **Responsive Design**: Works on desktop and mobile devices
 
 ### Interface Features:
+
 - Input form with multi-line text support
 - Clickable example queries for quick testing
 - Status indicator showing workflow progress
