@@ -8,7 +8,7 @@ sdk_version: 6.5.1
 app_file: main.py
 pinned: false
 license: mit
-short_description: A production-ready travel planning system built with Agno's workflow orchestration and comprehensive Langfuse observability. Features parallel agent execution, manager approval loops, and full trace monitoring.
+short_description: AI travel planner with multi-agent parallel research
 tags:
   - agno
   - langfuse
