@@ -4,6 +4,7 @@ emoji: ✈️
 colorFrom: blue
 colorTo: red
 sdk: gradio
+python_version: 3.11
 sdk_version: 6.5.1
 app_file: main.py
 pinned: false
