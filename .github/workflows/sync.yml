@@ -15,4 +15,4 @@ jobs:
       - name: Push to hub
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
-        run: git push https://mcikalmerdeka:$HF_TOKEN@huggingface.co/spaces/mcikalmerdeka/agno-langfuse-travel-planner main
+        run: git push https://mcikalmerdeka:$HF_TOKEN@huggingface.co/spaces/mcikalmerdeka/multi-agent-travel-planner main
