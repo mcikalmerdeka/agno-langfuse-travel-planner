@@ -1,6 +1,5 @@
 """Gradio interface for the Travel Planning Workflow."""
 import gradio as gr
-import asyncio
 
 
 def create_gradio_interface(plan_trip_func):
@@ -175,16 +174,16 @@ def create_gradio_interface(plan_trip_func):
     # Store the latest travel plan for export
     latest_travel_plan = {"content": ""}
     
-    # Wrapper function to handle async execution
-    def run_travel_planner(query: str):
+    # Async handler for Gradio (Gradio 6.x natively supports async event handlers)
+    async def run_travel_planner(query: str):
         """
-        Wrapper function to run the async travel planning workflow.
-        
+        Async handler to run the travel planning workflow.
+
         Args:
             query: User's travel planning query
-            
+
         Returns:
-            tuple: (status_message, result_markdown, export_btn_visible, pdf_file_visible)
+            tuple: (status_message, result_markdown, copy_btn_visible, markdown_storage)
         """
         if not query or not query.strip():
             return (
@@ -193,18 +192,13 @@ def create_gradio_interface(plan_trip_func):
                 gr.update(visible=False),  # Hide copy button
                 ""  # Clear markdown storage
             )
-        
+
         try:
-            # Run the async function
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-            
-            result = loop.run_until_complete(plan_trip_func(query))
-            loop.close()
-            
+            result = await plan_trip_func(query)
+
             if result and result.content:
                 status_msg = "**Travel Plan Generated Successfully!**"
-                
+
                 # Format the result
                 result_markdown = f"""
 
@@ -225,9 +219,9 @@ def create_gradio_interface(plan_trip_func):
 """
                 # Store the latest plan for export
                 latest_travel_plan["content"] = result_markdown
-                
+
                 return (
-                    status_msg, 
+                    status_msg,
                     result_markdown,
                     gr.update(visible=True),   # Show copy button
                     result_markdown  # Store in hidden textbox for copying
@@ -239,7 +233,7 @@ def create_gradio_interface(plan_trip_func):
                     gr.update(visible=False),  # Hide copy button
                     ""  # Clear markdown storage
                 )
-                
+
         except Exception as e:
             error_msg = f"**Error occurred during planning:** {str(e)}"
             error_detail = f"""## Error Occurred
@@ -259,7 +253,7 @@ def create_gradio_interface(plan_trip_func):
 Review the README.md for setup instructions.
 """
             return (
-                error_msg, 
+                error_msg,
                 error_detail,
                 gr.update(visible=False),  # Hide copy button
                 ""  # Clear markdown storage

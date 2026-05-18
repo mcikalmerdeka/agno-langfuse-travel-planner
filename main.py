@@ -79,14 +79,30 @@ async def plan_trip(query: str):
             "execution_mode": "parallel_once_then_revision_loop"
         }
     ):
-        result = await travel_planning_workflow.arun(query)
-        
+        response = travel_planning_workflow.arun(query)
+
+        # Handle both coroutine and async generator returns.
+        # Agno versions differ: some return WorkflowRunOutput directly,
+        # others return an AsyncIterator of events.
+        import asyncio
+        import inspect
+
+        if asyncio.iscoroutine(response):
+            result = await response
+        elif inspect.isasyncgen(response):
+            result = None
+            async for item in response:
+                result = item
+        else:
+            # Already a WorkflowRunOutput (sync return)
+            result = response
+
         # Update trace with final input/output
         langfuse.update_current_trace(
             input=query,
             output=result.content if result else None,
         )
-        
+
         return result
 
 
