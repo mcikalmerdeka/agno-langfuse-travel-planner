@@ -1,9 +1,20 @@
 """Custom function steps for critique and revision logic."""
+from typing import Any, Dict, List, Union
 from agno.workflow import Step
 from agno.workflow.types import StepInput, StepOutput
 from agno.run import RunContext
 from agents.critique_agent import critique_agent
 from core.schemas import CritiqueResult
+
+# Module-level state for end-condition access.
+# Newer agno versions pass List[StepOutput] to end_condition instead of RunContext,
+# so we mirror the key state here so the condition can still read it.
+_workflow_state: Dict[str, Any] = {
+    "revision_iteration": 0,
+    "is_approved": False,
+    "manager_feedback": "No feedback yet",
+    "previous_draft": "No previous draft",
+}
 
 # Function to critique and revise the presented travel plan
 def critique_and_revise(step_input: StepInput, run_context: RunContext) -> StepOutput:  # type: ignore[arg-type]
@@ -82,7 +93,14 @@ def critique_and_revise(step_input: StepInput, run_context: RunContext) -> StepO
     run_context.session_state["is_approved"] = is_approved
     run_context.session_state["manager_feedback"] = feedback_text
     run_context.session_state["revision_iteration"] = iteration + 1
-    
+
+    # Mirror to module-level state so end_condition can read it
+    # even when newer agno passes List[StepOutput] instead of RunContext
+    _workflow_state["is_approved"] = is_approved
+    _workflow_state["manager_feedback"] = feedback_text
+    _workflow_state["revision_iteration"] = iteration + 1
+    _workflow_state["previous_draft"] = current_draft
+
     status = "APPROVED" if is_approved else "NEEDS REVISION"
     print(f"   Manager Decision: {status}")
     
@@ -100,29 +118,26 @@ critique_step = Step(
 )
 
 
-def revision_approved_condition(run_context: RunContext) -> bool:  # type: ignore[arg-type]
+def revision_approved_condition(_run_context_or_step_outputs) -> bool:  # type: ignore[arg-type]
     """
     End condition for the revision loop between team lead and manager.
     Returns True to BREAK the loop (when approved or max iterations reached), False to continue.
-    
-    Checks session_state for approval status set by the critique agent.
+
+    Checks the mirrored _workflow_state for approval status set by the critique agent.
+    The parameter is ignored because newer agno passes List[StepOutput] instead of RunContext.
     """
-    # Ensure session_state is initialized
-    if run_context.session_state is None:
-        run_context.session_state = {}
-    
-    # Get approval status and iteration from session state
-    is_approved: bool = run_context.session_state.get("is_approved", False)
-    iteration: int = run_context.session_state.get("revision_iteration", 0)
-    
+    # Read from module-level state (mirrored by critique_and_revise)
+    is_approved: bool = _workflow_state.get("is_approved", False)
+    iteration: int = _workflow_state.get("revision_iteration", 0)
+
     if is_approved:
         print(f"\nTravel plan APPROVED by Manager after {iteration} iteration(s)!")
         return True
-    
+
     if iteration >= 2:
         print(f"\nMax iterations reached ({iteration}). Finalizing plan.")
         return True
-    
+
     print(f"\nTeam Lead revising based on Manager feedback...")
     return False
 
