@@ -11,7 +11,7 @@ def create_gradio_interface(plan_trip_func):
         plan_trip_func: The async function that runs the travel planning workflow
         
     Returns:
-        gr.Blocks: Configured Gradio interface
+        tuple: (gr.Blocks interface, str css, gr.Theme theme) for launch()
     """
     
     # Custom CSS for dark theme UI
@@ -188,7 +188,7 @@ def create_gradio_interface(plan_trip_func):
         """
         if not query or not query.strip():
             return (
-                "⚠️ Please enter a valid travel planning query.",
+                "Warning: Please enter a valid travel planning query.",
                 "## No Query Provided\n\nPlease enter your travel planning requirements in the text box above.",
                 gr.update(visible=False),  # Hide copy button
                 ""  # Clear markdown storage
@@ -203,7 +203,7 @@ def create_gradio_interface(plan_trip_func):
             loop.close()
             
             if result and result.content:
-                status_msg = "✅ **Travel Plan Generated Successfully!**"
+                status_msg = "**Travel Plan Generated Successfully!**"
                 
                 # Format the result
                 result_markdown = f"""
@@ -212,12 +212,12 @@ def create_gradio_interface(plan_trip_func):
 
 ---
 
-### 📊 Workflow Information
+### Workflow Information
 - **Workflow:** Travel Planning with Manager Approval
 - **Research Agents:** Destination, Hotels, Activities (ran in parallel)
 - **Planning Agent:** Itinerary Planner (Team Lead)
 - **Review Agent:** Critique Agent (Manager)
-- **Status:** ✅ Approved and Complete
+- **Status:** Approved and Complete
 
 ---
 
@@ -234,15 +234,15 @@ def create_gradio_interface(plan_trip_func):
                 )
             else:
                 return (
-                    "⚠️ **Workflow completed but no result was generated.**",
+                    "**Workflow completed but no result was generated.**",
                     "## No Result\n\nThe workflow completed but did not return a travel plan. Please try again.",
                     gr.update(visible=False),  # Hide copy button
                     ""  # Clear markdown storage
                 )
                 
         except Exception as e:
-            error_msg = f"❌ **Error occurred during planning:** {str(e)}"
-            error_detail = f"""## ❌ Error Occurred
+            error_msg = f"**Error occurred during planning:** {str(e)}"
+            error_detail = f"""## Error Occurred
 
 **Error Message:**
 ```
@@ -265,8 +265,8 @@ Review the README.md for setup instructions.
                 ""  # Clear markdown storage
             )
     
-    # Create the Gradio interface with dark theme
-    with gr.Blocks(css=custom_css, theme=gr.themes.Base(primary_hue="slate", secondary_hue="slate").set(
+    # Define theme for launch()
+    theme = gr.themes.Base(primary_hue="slate", secondary_hue="slate").set(
         body_background_fill="#1a1a1a",
         body_background_fill_dark="#1a1a1a",
         block_background_fill="#2d2d2d",
@@ -277,35 +277,38 @@ Review the README.md for setup instructions.
         block_title_text_color="#ffffff",
         body_text_color="#ffffff",
         body_text_color_subdued="#cccccc",
-    ), title="🌏 Travel Planning AI") as interface:
+    )
+
+    # Create the Gradio interface with dark theme
+    with gr.Blocks(title="Travel Planning AI") as interface:
         
         # Header
         gr.HTML("""
         <div class="header-box">
-            <div class="header-title">🌏 Travel Planning AI</div>
+            <div class="header-title">Travel Planning AI</div>
             <div class="header-subtitle">Powered by Agno Workflow + Langfuse Tracing</div>
         </div>
         """)
         
         # Workflow info
-        with gr.Accordion("ℹ️ How It Works", open=False):
+        with gr.Accordion("How It Works", open=False):
             gr.Markdown("""
-            ### 🔄 Workflow Architecture
+            ### Workflow Architecture
             
             This AI-powered travel planner uses a multi-agent workflow:
             
-            1. **🔍 Research Team (Parallel)** - Three agents work simultaneously:
-               - 🏛️ Destination Researcher - Finds attractions and cultural insights
-               - 🏨 Hotel Finder - Searches for accommodations matching your budget
-               - 🎭 Activities Researcher - Discovers experiences and local cuisine
+            1. **Research Team (Parallel)** - Three agents work simultaneously:
+               - Destination Researcher - Finds attractions and cultural insights
+               - Hotel Finder - Searches for accommodations matching your budget
+               - Activities Researcher - Discovers experiences and local cuisine
             
-            2. **📋 Team Lead (Itinerary Planner)** - Creates comprehensive travel plan
+            2. **Team Lead (Itinerary Planner)** - Creates comprehensive travel plan
             
-            3. **✅ Manager (Critique Agent)** - Reviews and approves the plan
+            3. **Manager (Critique Agent)** - Reviews and approves the plan
             
-            4. **🔄 Revision Loop** - If needed, the planner revises based on feedback
+            4. **Revision Loop** - If needed, the planner revises based on feedback
             
-            5. **📋 Final Delivery** - You receive the manager-approved travel plan!
+            5. **Final Delivery** - You receive the manager-approved travel plan!
             
             **Observability:** All steps are traced with Langfuse for full transparency.
             """)
@@ -315,7 +318,7 @@ Review the README.md for setup instructions.
         # Main interface
         with gr.Row():
             with gr.Column(scale=1):
-                gr.Markdown("### 📝 Your Travel Query")
+                gr.Markdown("### Your Travel Query")
                 
                 query_input = gr.Textbox(
                     label="Describe your ideal trip",
@@ -325,11 +328,11 @@ Review the README.md for setup instructions.
                 )
                 
                 with gr.Row():
-                    submit_btn = gr.Button("🚀 Generate Travel Plan", variant="primary", size="lg")
-                    clear_btn = gr.Button("🗑️ Clear", variant="secondary")
+                    submit_btn = gr.Button("Generate Travel Plan", variant="primary", size="lg")
+                    clear_btn = gr.Button("Clear", variant="secondary")
                 
                 # Example queries
-                gr.Markdown("### 💡 Example Queries")
+                gr.Markdown("### Example Queries")
                 
                 examples = [
                     "Plan a 7-day romantic trip to Paris, France for a couple. Include museums, fine dining, and scenic walks. Luxury budget.",
@@ -347,10 +350,10 @@ Review the README.md for setup instructions.
         
         # Status and output section
         with gr.Column(scale=1):
-            gr.Markdown("### 📊 Status & Results")
+            gr.Markdown("### Status & Results")
             
             status_output = gr.Markdown(
-                value="💤 **Ready to plan your trip!** Enter your query and click 'Generate Travel Plan'.",
+                value="**Ready to plan your trip!** Enter your query and click 'Generate Travel Plan'.",
                 elem_id="status-box"
             )
             
@@ -360,13 +363,13 @@ Review the README.md for setup instructions.
             )
             
             # Copy button and hidden textbox for clipboard
-            copy_btn = gr.Button("📋 Copy to Clipboard", variant="secondary", size="sm", visible=False)
+            copy_btn = gr.Button("Copy to Clipboard", variant="secondary", size="sm", visible=False)
             markdown_storage = gr.Textbox(visible=False, elem_id="markdown-storage")
         
         # Footer
         gr.HTML("""
         <div class="footer-info">
-            <p>📊 All workflows are traced with Langfuse | ⚡ Powered by Agno + OpenAI</p>
+            <p>All workflows are traced with Langfuse | Powered by Agno + OpenAI</p>
         </div>
         """)
         
@@ -381,7 +384,7 @@ Review the README.md for setup instructions.
         clear_btn.click(
             fn=lambda: (
                 "",
-                "💤 **Ready to plan your trip!** Enter your query and click 'Generate Travel Plan'.",
+                "**Ready to plan your trip!** Enter your query and click 'Generate Travel Plan'.",
                 "",
                 gr.update(visible=False),
                 ""
@@ -398,4 +401,4 @@ Review the README.md for setup instructions.
             js="(text) => {navigator.clipboard.writeText(text); return text;}"
         )
     
-    return interface
+    return interface, custom_css, theme

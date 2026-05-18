@@ -24,7 +24,7 @@ def critique_and_revise(step_input: StepInput, run_context: RunContext) -> StepO
     # Get current iteration
     iteration = run_context.session_state.get("revision_iteration", 0)
     
-    print(f"\n🔍 Manager Review - Review #{iteration + 1}/2")
+    print(f"\nManager Review - Review #{iteration + 1}/2")
     
     # Build critique prompt
     critique_prompt = f"""
@@ -69,7 +69,7 @@ def critique_and_revise(step_input: StepInput, run_context: RunContext) -> StepO
                 feedback_text = str(response.content)
             
         except Exception as e:
-            print(f"   ⚠️ Error parsing critique: {e}")
+            print(f"   Error parsing critique: {e}")
             # Auto-approve after 2 iterations
             is_approved = iteration >= 1
             feedback_text = str(response.content) if response.content else "Critique completed"
@@ -83,7 +83,7 @@ def critique_and_revise(step_input: StepInput, run_context: RunContext) -> StepO
     run_context.session_state["manager_feedback"] = feedback_text
     run_context.session_state["revision_iteration"] = iteration + 1
     
-    status = "✅ APPROVED" if is_approved else "🔄 NEEDS REVISION"
+    status = "APPROVED" if is_approved else "NEEDS REVISION"
     print(f"   Manager Decision: {status}")
     
     return StepOutput(
@@ -116,13 +116,13 @@ def revision_approved_condition(run_context: RunContext) -> bool:  # type: ignor
     iteration: int = run_context.session_state.get("revision_iteration", 0)
     
     if is_approved:
-        print(f"\n✅ Travel plan APPROVED by Manager after {iteration} iteration(s)!")
+        print(f"\nTravel plan APPROVED by Manager after {iteration} iteration(s)!")
         return True
     
     if iteration >= 2:
-        print(f"\n⚠️ Max iterations reached ({iteration}). Finalizing plan.")
+        print(f"\nMax iterations reached ({iteration}). Finalizing plan.")
         return True
     
-    print(f"\n🔄 Team Lead revising based on Manager feedback...")
+    print(f"\nTeam Lead revising based on Manager feedback...")
     return False
 

@@ -39,23 +39,31 @@ A production-ready travel planning system built with Agno's workflow orchestrati
 ```
 agno-langfuse-travel-planner/
 ├── main.py                    # Entry point - run this
-├── frontend/                  # Gradio web interface
-│   ├── __init__.py           # Module exports
-│   └── app.py                # Gradio interface with dark theme
-├── core/                      # Configuration & utilities
-│   ├── config.py             # Langfuse & OpenLIT initialization
-│   ├── schemas.py            # Pydantic models
-│   └── utils.py              # Agent observation wrapper
-├── agents/                    # Agent definitions
-│   ├── research_agents.py    # Destination, hotel, activities researchers
-│   ├── planner_agent.py      # Itinerary planner (team lead)
-│   └── critique_agent.py     # Travel plan reviewer (manager)
-├── tools/                     # Agent tools
-│   └── web_search.py         # Tavily web search with tracing
-└── workflows/                 # Workflow components
-    ├── steps.py              # Step definitions
-    ├── critique_logic.py     # Critique & revision logic
-    └── travel_workflow.py    # Main workflow assembly
+├── src/                       # Source code
+│   ├── agents/                # Agent definitions
+│   │   ├── __init__.py
+│   │   ├── research_agents.py       # Destination, hotel, activities researchers
+│   │   ├── planner_agent.py         # Itinerary planner (team lead)
+│   │   └── critique_agent.py        # Travel plan reviewer (manager)
+│   ├── core/                  # Configuration & utilities
+│   │   ├── __init__.py
+│   │   ├── config.py          # Langfuse & OpenLIT initialization
+│   │   ├── schemas.py         # Pydantic models
+│   │   └── utils.py           # Agent observation wrapper
+│   ├── frontend/              # Gradio web interface
+│   │   ├── __init__.py        # Module exports
+│   │   └── app.py             # Gradio interface with dark theme
+│   ├── tools/                 # Agent tools
+│   │   ├── __init__.py
+│   │   └── web_search.py      # Tavily web search with tracing
+│   └── workflows/             # Workflow components
+│       ├── __init__.py
+│       ├── steps.py           # Step definitions
+│       ├── critique_logic.py  # Critique & revision logic
+│       └── travel_workflow.py # Main workflow assembly
+├── pyproject.toml             # Package configuration
+├── requirements.txt
+└── README.md
 ```
 
 ## Module Breakdown

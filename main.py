@@ -1,4 +1,13 @@
 """Main entry point for the Travel Planning Workflow."""
+import sys
+from pathlib import Path
+
+# Bootstrap: ensure src/ is on sys.path so the package imports resolve
+# when running main.py directly (e.g. python main.py)
+_src = Path(__file__).parent / "src"
+if str(_src) not in sys.path:
+    sys.path.insert(0, str(_src))
+
 from langfuse import observe, propagate_attributes
 
 # Import configuration (initializes Langfuse and OpenLIT)
@@ -34,7 +43,7 @@ async def plan_trip(query: str):
     ==================
     Travel Planning Pipeline (span)
     └── travel-planning-workflow (agent)
-        ├── Research Team Phase ⚡ (runs ONCE only)
+        ├── Research Team Phase (runs ONCE only)
         │   ├── destination-researcher (agent) → tavily-web-search
         │   ├── hotel-finder (agent) → tavily-web-search
         │   └── activities-researcher (agent) → tavily-web-search
@@ -47,7 +56,7 @@ async def plan_trip(query: str):
         │       ├── itinerary-planner (team lead) → revises report based on Manager feedback
         │       └── critique-agent (manager) → final approval
         │
-        └── Present Final Report 📋
+        └── Present Final Report
             └── itinerary-planner (team lead) → presents Manager-approved plan to user
     
     Benefits:
@@ -83,19 +92,21 @@ async def plan_trip(query: str):
 
 if __name__ == "__main__":
     print("=" * 70)
-    print("🌏 TRAVEL PLANNING WORKFLOW - WEB INTERFACE")
+    print("TRAVEL PLANNING WORKFLOW - WEB INTERFACE")
     print("=" * 70)
-    print("\n🚀 Starting Gradio interface...")
-    print("📊 Langfuse tracing is enabled for all workflows")
+    print("\nStarting Gradio interface...")
+    print("Langfuse tracing is enabled for all workflows")
     print("=" * 70)
     
     # Create and launch the Gradio interface
-    interface = create_gradio_interface(plan_trip)
+    interface, custom_css, theme = create_gradio_interface(plan_trip)
     interface.launch(
         server_name="0.0.0.0",
         server_port=7860,
         share=False,
         show_error=True,
-        quiet=False
+        quiet=False,
+        css=custom_css,
+        theme=theme
     )
 

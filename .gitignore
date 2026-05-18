@@ -13,8 +13,7 @@ wheels/
 .env
 
 # Other files
-reference/
-medium/
+other/
 
 # Temporary ignore assets folder
 assets/
