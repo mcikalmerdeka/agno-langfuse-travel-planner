@@ -98,10 +98,14 @@ async def plan_trip(query: str):
             result = response
 
         # Update trace with final input/output
-        langfuse.update_current_trace(
-            input=query,
-            output=result.content if result else None,
-        )
+        try:
+            langfuse.update_current_trace(
+                input=query,
+                output=result.content if result else None,
+            )
+        except AttributeError:
+            # Fallback for newer langfuse versions that removed update_current_trace
+            pass
 
         return result
 
