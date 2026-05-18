@@ -17,5 +17,10 @@ else:
     print("Authentication failed. Please check your credentials and host.")
 
 # Initialize OpenLIT instrumentation
-openlit.init(tracer=langfuse._otel_tracer, disable_batch=True)
+# Handle API differences across openlit versions (some deployments omit 'tracer' support)
+try:
+    openlit.init(tracer=langfuse._otel_tracer, disable_batch=True)
+except TypeError:
+    # Fallback for older openlit versions that don't accept 'tracer'
+    openlit.init(disable_batch=True)
 
